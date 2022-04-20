@@ -1,7 +1,2 @@
-* Create a PHP framework. You can use MVC, MVVM or MVP design pattern.
-
-* Show how to pass variables in PHP.
-
-* Show database queries in MongoDB or other database program.
-
-* Social media integration login.
+* Built on top of the [MVC framework I built as a practice](https://github.com/nicemelbs/php-mvc)
+* Connecting to Steam Web API to fetch information, including their OpenID service to log in.
