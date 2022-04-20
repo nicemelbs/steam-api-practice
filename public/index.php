@@ -4,6 +4,7 @@ require_once __DIR__ . '/../vendor/autoload.php';
 
 use app\controllers\AuthController;
 use app\controllers\SiteController;
+use app\controllers\SteamUserController;
 use app\core\Application;
 use app\models\User;
 
@@ -19,31 +20,17 @@ $config = [
         'host' => $_ENV['DB_HOST'],
         'port' => $_ENV['DB_PORT'],
     ],
+    'steam' => [
+        'api_key' => $_ENV['STEAM_API_KEY'],
+        'api_url' => $_ENV['STEAM_API_URL'],
+    ],
     'userClass' => User::class,
 ];
 
 $app = new Application(dirname(__DIR__), $config);
+
 $app->router->get('/', [SiteController::class, 'home']);
-
-$app->router->get('/contact', [SiteController::class, 'contact']);
-$app->router->post('/contact', [SiteController::class, 'contact']);
-
-$app->router->get('/register', [AuthController::class, 'register']);
-$app->router->post('/register', [AuthController::class, 'register']);
-$app->router->get('/login', [AuthController::class, 'login']);
-$app->router->post('/login', [AuthController::class, 'login']);
-$app->router->get('/logout', [AuthController::class, 'logout']);
-
-$app->router->get('/profile', [AuthController::class, 'profile']);
-
-//register routes with arguments
-$app->router->get('/profile/{id}', [SiteController::class, 'profile']);
-$app->router->get('/profile/{id:\d+}/{username}', [SiteController::class, 'profile']);
-
-$app->router->get('/news/', [SiteController::class, 'allNews']);
-$app->router->get('/news/{id}', [SiteController::class, 'news']);
-
-$app->router->get('/write', [AuthController::class, 'write']);
-$app->router->post('/write', [AuthController::class, 'write']);
+$app->router->get('/profile/{steam_id}', [SteamUserController::class, 'show']);
+$app->router->get('/profile/{steam_id}/games', [SteamUserController::class, 'userGames']);
 
 $app->run();

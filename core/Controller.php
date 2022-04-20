@@ -59,10 +59,10 @@ class Controller
 
     //GET: /users/{userId}
     //route: users.show
-    public function show()
-    {
-
-    }
+//    public function show()
+//    {
+//
+//    }
 
     //PUT/PATCH: /users/{userId}
     //route: users.update
