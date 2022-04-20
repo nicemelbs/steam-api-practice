@@ -1,0 +1,20 @@
+{
+  "name": "melbs/steam-api-practice",
+  "autoload": {
+    "psr-4": {
+      "app\\": "./"
+    }
+  },
+  "authors": [
+    {
+      "name": "Melvin San Jose",
+      "email": "sanjose.melvin@gmail.com"
+    }
+  ],
+  "require": {
+    "guzzlehttp/guzzle": "^7.4",
+    "vlucas/phpdotenv": "^5.4",
+    "mongodb/mongodb": "^1.12",
+    "ext-pdo": "*"
+  }
+}
