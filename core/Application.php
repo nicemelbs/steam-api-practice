@@ -5,6 +5,11 @@ namespace app\core;
 use app\core\db\Database;
 use app\core\db\DbModel;
 use Exception;
+use GuzzleHttp\Client;
+use GuzzleHttp\HandlerStack;
+use Kevinrob\GuzzleCache\CacheMiddleware;
+use Kevinrob\GuzzleCache\Storage\Psr6CacheStorage;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class Application
 {
@@ -20,19 +25,19 @@ class Application
     public string $userClass;
     public string $layout = 'main';
     public View $view;
+    public static Client $client;
 
     public function __construct($rootPath, array $config)
     {
         self::$ROOT_DIR = $rootPath;
         self::$app = $this;
+
         $this->request = new Request();
         $this->response = new Response();
         $this->router = new Router($this->request, $this->response);
         $this->session = new Session();
         $this->view = new View();
         $this->db = new Database($config['db']);
-
-
         $this->userClass = $config['userClass'];
 
         $primaryValue = $this->session->get('user');
@@ -43,6 +48,35 @@ class Application
             $this->user = null;
         }
 
+
+       self::initCaching();
+    }
+
+    private static function initCaching()
+    {
+        // Create a HandlerStack
+        $stack = HandlerStack::create();
+
+        // Choose a cache strategy: the PrivateCacheStrategy is good to start with
+        $cache_strategy_class = '\\Kevinrob\\GuzzleCache\\Strategy\\PrivateCacheStrategy';
+
+        // Instantiate the cache storage: a PSR-6 file system cache with
+        // a default lifetime of 1 minute (60 seconds).
+        $cache_storage = new Psr6CacheStorage(
+            new FilesystemAdapter('', 0, '/tmp/guzzle-cache'), 60 );
+
+        // Add cache middleware to the top of the stack with `push`
+        $stack->push(
+        new CacheMiddleware(
+            new $cache_strategy_class (
+                $cache_storage
+            )
+        ),
+        'cache'
+    );
+
+        // Initialize the client with the handler option
+        self::$client = new Client(['handler' => $stack]);
     }
 
     public function run()
@@ -50,8 +84,8 @@ class Application
         try {
             echo $this->router->resolve();
         } catch (Exception $e) {
-            $errorCode = $e->getCode();
-
+            $errorCode = intval($e->getCode());
+            $errorMessage = $e->getMessage();
             $this->response->setStatusCode($errorCode);
             echo $this->view->renderView("error", [
                 'exception' => $e
