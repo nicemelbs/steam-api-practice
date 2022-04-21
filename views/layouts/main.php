@@ -1,6 +1,7 @@
 <?php
 
 use app\core\Application;
+use app\models\SteamUser;
 
 require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
 
@@ -18,7 +19,7 @@ require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Navbar</a>
+        <a class="navbar-brand" href="/"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -28,18 +29,17 @@ require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
                 <li class="nav-item">
                     <a class="nav-link active" aria-current="page" href="/">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/news">News</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/contact">Contact</a>
-                </li>
 
-                <?php if (!Application::isGuest()): ?>
+                <?php if (!Application::isGuest()) { ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="/write">Publish a news!</a>
+                        <a class="nav-link" href="/profile">My Profile</a>
                     </li>
-                <?php endif ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile/<?= $_SESSION['steamid'] ?>/games">My Games</a>
+                    </li>
+
+                <?php } ?>
+
             </ul>
 
             <div class="d-flex justify-content-end">
@@ -50,6 +50,17 @@ require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
                     </ul>
                 <?php else: ?>
                     <ul class="navbar-nav">
+                        <?php
+                        $user = SteamUser::findBySteamId($_SESSION['steamid']);
+                        if ($user): ?>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/profile"><?= $user->personaname ?> </a>
+                            </li>
+                            <li class="nav-item">
+                                <img src="<?= $user->avatar ?> " class="rounded-circle" width="30" height="30"
+                                     alt="<?= $user->personaname ?>">
+                            </li>
+                        <?php endif; ?>
                         <li class="nav-item"><?php logoutbutton(); ?></li>
                     </ul>
                 <?php endif ?>
@@ -95,6 +106,7 @@ require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
         crossorigin="anonymous"></script>
+
 
 </body>
 </html>

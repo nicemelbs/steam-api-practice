@@ -9,7 +9,7 @@ $steamauth['apikey'] = $_ENV['STEAM_API_KEY']; // Your Steam WebAPI-Key found at
 $steamauth['domainname'] = $base_url; // The main URL of your website displayed in the login page
 $steamauth['logoutpage'] = "/"; // Page to redirect to after a successfull logout (from the directory the
 // SteamAuth-folder is located in) - NO slash at the beginning!
-$steamauth['loginpage'] = "/"; // Page to redirect to after a successfull login (from the directory the
+$steamauth['loginpage'] = "/profile"; // Page to redirect to after a successfull login (from the directory the
 // SteamAuth-folder is located in) - NO slash at the beginning!
 
 // System stuff

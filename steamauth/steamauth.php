@@ -1,9 +1,14 @@
 <?php
+
+use app\core\Application;
+use app\models\SteamUser;
+
 ob_start();
 
 function logoutbutton()
 {
-    echo "<form action='' method='get'><button name='logout' type='submit'>Logout</button></form>"; //logout button
+    echo "<form action='' method='get'><button class='btn btn-info btn-sm' name='logout' type='submit'>Logout</button></form>";
+    //logout button
 }
 
 function loginbutton($buttonstyle = "square")
@@ -14,6 +19,7 @@ function loginbutton($buttonstyle = "square")
 
     echo $button;
 }
+
 
 if (isset($_GET['login'])) {
     require 'openid.php';
@@ -33,6 +39,7 @@ if (isset($_GET['login'])) {
                 preg_match($ptn, $id, $matches);
 
                 $_SESSION['steamid'] = $matches[1];
+
                 if (!headers_sent()) {
                     header('Location: ' . $steamauth['loginpage']);
                     exit;
