@@ -7,11 +7,11 @@ use app\models\SteamUser;
 
 $steamUser->fetchUserGames();
 ?>
-<div class="container container-fluid">
+<div class=" container-fluid">
     <h1> <?= $steamUser->personaname ?>'s Game Data </h1>
 </div>
-<div class="container container-fluid">
-    <table class="container">
+<div class=" container-fluid">
+    <table class=" table-striped">
         <tr>
             <th>&nbsp;</th>
             <th>Game</th>

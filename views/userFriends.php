@@ -15,8 +15,9 @@ $steamUser->fetchUserFriends();
 <div class="container">
     <h3><?= $steamUser->personaname ?>'s Friends</h3>
 
-    <table>
+    <table class="table-striped">
         <tr>
+            <th>Photo</th>
             <th>Name</th>
             <th>Friends Since</th>
             <th>Steam Profile</th>
@@ -25,7 +26,9 @@ $steamUser->fetchUserFriends();
         <?php
         foreach ($steamUser->friends as $steamFriend) {
             $friend = SteamUser::findBySteamId($steamFriend->steamid);
+
             echo '<tr>' . PHP_EOL;
+            echo '<td><img src="' . $friend->avatar . '" alt="' . $friend->personaname . '" /></td>';
             echo '<td><a href="/profile/' . $steamFriend->steamid . '">' . $friend->personaname . '</a></td>';
             echo '<td>' . date('F j, Y', $steamFriend->friend_since) . '</td>';
             echo '<td><a href="' . $friend->profileurl . '">' . $friend->profileurl . '</a></td>';

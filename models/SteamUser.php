@@ -75,7 +75,7 @@ class SteamUser extends SteamAPIObject
         return $steamUser;
     }
 
-    private static function getPlayerLevel($steam_id)
+    public static function getPlayerLevel($steam_id)
     {
         $uri = "http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/";
         $queryParams = ['steamid' => $steam_id];

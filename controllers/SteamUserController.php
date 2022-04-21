@@ -11,16 +11,21 @@ use app\models\SteamUser;
 class SteamUserController extends Controller
 {
 
-    public function show(Request $request, Response $response){
+    public function show(Request $request, Response $response)
+    {
         $steam_id = $request->getRouteParams()['steam_id'];
         $steamUser = SteamUser::findBySteamId($steam_id);
+
+        $steamUser->playerlevel = SteamUser::getPlayerLevel($steam_id);
+
 
         return $this->render('profile', [
             'steamUser' => $steamUser
         ]);
     }
 
-    public function userGames(Request $request, Response $response){
+    public function userGames(Request $request, Response $response)
+    {
         $steam_id = $request->getRouteParams()['steam_id'];
         $steamUser = SteamUser::findBySteamId($steam_id);
 
@@ -29,7 +34,8 @@ class SteamUserController extends Controller
         ]);
     }
 
-    public function gameInfo(Request $request, Response $response) {
+    public function gameInfo(Request $request, Response $response)
+    {
         $app_id = $request->getRouteParams()['app_id'];
         $game = SteamGame::findOne(['appid' => $app_id]);
 

@@ -9,9 +9,9 @@ use Stidges\CountryFlags\CountryFlag;
 
 $cc = 'Unknown';
 
-if($steamUser){
+if ($steamUser) {
 
-    if($steamUser->loccountrycode ) {
+    if ($steamUser->loccountrycode) {
         $cc = new CountryFlag();
         $cc = $cc->get($steamUser->loccountrycode);
     }
@@ -25,7 +25,7 @@ if($steamUser){
     <div class="row">
         <div class="col-md-12">
             <h1><?= $steamUser->personaname ?></h1>
-                <img src="<?= $steamUser->avatarfull ?>" alt="<?= $steamUser->personaname ?>" class="img-responsive">
+            <img src="<?= $steamUser->avatarfull ?>" alt="<?= $steamUser->personaname ?>" class="img-responsive">
         </div>
         <div class="col-md-12">
             <h2>Basic Information</h2>
@@ -33,7 +33,8 @@ if($steamUser){
                 <tr>
                     <td>Display name</td>
                     <td><?= $steamUser->personaname ?></td>
-                </tr><tr>
+                </tr>
+                <tr>
                     <td>Profile Level</td>
                     <td><?= $steamUser->playerlevel ?></td>
                 </tr>
@@ -47,8 +48,9 @@ if($steamUser){
                 </tr>
                 <tr>
                     <td><a href="/profile/<?= $steamUser->steamid ?>/friends">Friends (<?= count($steamUser->friends)
-                            ?></a>)</td>
-                    <td><a href="/profile/<?= $steamUser->steamid ?>/games">Games(<?=
+                            ?></a>)
+                    </td>
+                    <td><a href="/profile/<?= $steamUser->steamid ?>/games">Games (<?=
                             $steamUser->gamecount ?>)</a></td>
                 </tr>
             </table>
