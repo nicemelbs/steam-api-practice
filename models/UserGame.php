@@ -21,7 +21,7 @@ class UserGame extends SteamAPIObject
         return [];
     }
 
-    public function getSteamGame(): SteamGame
+    public function getSteamGame(): ?SteamGame
     {
         return SteamGame::findOne(['appid' => $this->appId]);
     }

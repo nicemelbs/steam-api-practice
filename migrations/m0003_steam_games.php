@@ -13,7 +13,7 @@ class m0003_steam_games extends Migration
         $sql = "CREATE TABLE `steam_games` (
             `id` INT(11) NOT NULL AUTO_INCREMENT,
             `appid` int(11) NOT NULL UNIQUE ,
-            `name` varchar(255) NOT NULL,
+            `name` varchar(255),
             `detailed_description` varchar(5000),
             `about_the_game` varchar(5000),
             `short_description` varchar(500),

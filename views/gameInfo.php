@@ -16,7 +16,7 @@ if ($game->header_image != '') {
     echo '<img src="' . $game->header_image . '" alt="' . $game->name . '" >';
 }
 ?>
-<p> <?= $game->detailed_description ?> </p>
+<div class="container"> <?= $game->detailed_description ?> </div>
 <!--    link to store page -->
     <a href="https://store.steampowered.com/app/<?= $game->appid ?>" target="_blank">
         <button class="btn btn-primary">

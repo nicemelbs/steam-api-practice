@@ -13,19 +13,19 @@ use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 class Application
 {
+    public static string $ROOT_DIR;
+    public static Application $app;
+    public static Client $client;
     public Router $router;
     public Request $request;
     public Response $response;
-    public static string $ROOT_DIR;
-    public static Application $app;
     public Controller $controller;
     public Session $session;
-    public Database $db;
-    public ?DbModel $user; // variable could be null
+    public Database $db; // variable could be null
+    public ?DbModel $user;
     public string $userClass;
     public string $layout = 'main';
     public View $view;
-    public static Client $client;
 
     public function __construct($rootPath, array $config)
     {
@@ -49,7 +49,7 @@ class Application
         }
 
 
-       self::initCaching();
+        self::initCaching();
     }
 
     private static function initCaching()
@@ -63,20 +63,25 @@ class Application
         // Instantiate the cache storage: a PSR-6 file system cache with
         // a default lifetime of 1 minute (60 seconds).
         $cache_storage = new Psr6CacheStorage(
-            new FilesystemAdapter('', 0, '/tmp/guzzle-cache'), 60 );
+            new FilesystemAdapter('', 0, Application::$ROOT_DIR . '/.cache/'));
 
         // Add cache middleware to the top of the stack with `push`
         $stack->push(
-        new CacheMiddleware(
-            new $cache_strategy_class (
-                $cache_storage
-            )
-        ),
-        'cache'
-    );
+            new CacheMiddleware(
+                new $cache_strategy_class (
+                    $cache_storage
+                )
+            ),
+            'cache'
+        );
 
         // Initialize the client with the handler option
         self::$client = new Client(['handler' => $stack]);
+    }
+
+    public static function isGuest(): bool
+    {
+        return !self::$app->user;
     }
 
     public function run()
@@ -85,14 +90,12 @@ class Application
             echo $this->router->resolve();
         } catch (Exception $e) {
             $errorCode = intval($e->getCode());
-            $errorMessage = $e->getMessage();
             $this->response->setStatusCode($errorCode);
             echo $this->view->renderView("error", [
                 'exception' => $e
             ]);
         }
     }
-
 
     /**
      * @param Controller $controller
@@ -122,12 +125,8 @@ class Application
         $this->user = null;
     }
 
-    public static function isGuest(): bool
-    {
-        return !self::$app->user;
-    }
-
     //Generate HTML tag to display the favicon
+
     public function favicon($fileName = 'favicon.ico'): string
     {
         $fileName = realpath(self::$ROOT_DIR . '/' . $fileName);

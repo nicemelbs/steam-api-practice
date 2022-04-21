@@ -13,19 +13,13 @@ class SteamGame extends SteamAPIObject
     public $header_image;
     public $short_description;
 
-
-    public function rules(): array
-    {
-        return [];
-    }
-
-    public static function findOne($attributes): SteamGame
+    public static function findOne($attributes): ?SteamGame
     {
         //check if game is in the database
         //if not, get it from steam API and save it in the database
         $game = parent::findOne($attributes);
 
-        if(!$game) {
+        if (!$game) {
             $game = new SteamGame();
 
             $url = "http://store.steampowered.com/api/appdetails/";
@@ -37,7 +31,7 @@ class SteamGame extends SteamAPIObject
 
             //some games are not available in the steam store.
             //probably removed from the store or region locked
-            if($fetchedObject[$appId]['success']) {
+            if ($fetchedObject[$appId]['success']) {
 
                 $fetchedObject = $fetchedObject[$appId]['data'];
                 $game->appid = $fetchedObject['steam_appid'];
@@ -48,9 +42,19 @@ class SteamGame extends SteamAPIObject
                 $game->short_description = $fetchedObject['short_description'];
 
                 $game->save();
-            }
+            } else return null;
         }
         return $game;
+    }
+
+    public static function tableName()
+    {
+        return 'steam_games';
+    }
+
+    public function rules(): array
+    {
+        return [];
     }
 
     public function attributes(): array
@@ -63,10 +67,5 @@ class SteamGame extends SteamAPIObject
             'header_image',
             'short_description',
         ];
-    }
-
-    public static function tableName()
-    {
-        return 'steam_games';
     }
 }

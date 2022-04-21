@@ -8,15 +8,21 @@ use PDOStatement;
 
 abstract class DbModel extends Model
 {
-    abstract public static function tableName();
-
-    private static function prepare(string $query)
+    public static function findAll(array $attributes = []): array
     {
-        return Application::$app->db->pdo->prepare($query);
+        $statement = self::prepareStatement($attributes);
+        $statement->execute();
+        return $statement->fetchAll(\PDO::FETCH_CLASS, static::class);
+    }
+
+    public static function findById(string $id): ?self
+    {
+        return self::findOne(['id' => $id]);
     }
 
 
     //save data to database
+
     public function save()
     {
         $tableName = static::tableName();
@@ -26,7 +32,7 @@ abstract class DbModel extends Model
             return ':' . $attribute;
         }, $attributes);
 
-        $query = "INSERT INTO $tableName (";
+        $query = "INSERT IGNORE INTO $tableName (";
         $query .= implode(',', $attributes);
         $query .= ') VALUES (';
         $query .= implode(',', $params);
@@ -41,13 +47,23 @@ abstract class DbModel extends Model
         return $statement->execute();
     }
 
+    abstract public static function tableName();
+
+    //find one record with attribute values
+
+    private static function prepare(string $query)
+    {
+        return Application::$app->db->pdo->prepare($query);
+    }
+
+    //find all records with attribute values
+
     public function isUnique($attribute, $value): bool
     {
         static::findOne([$attribute => $value]);
         return empty($result);
     }
 
-    //find one record with attribute values
     public static function findOne(array $attributes): ?self
     {
         $statement = self::prepareStatement($attributes);
@@ -56,14 +72,6 @@ abstract class DbModel extends Model
 
         if ($object === false) return null;
         return $object;
-    }
-
-    //find all records with attribute values
-    public static function findAll(array $attributes = []): array
-    {
-        $statement = self::prepareStatement($attributes);
-        $statement->execute();
-        return $statement->fetchAll(\PDO::FETCH_CLASS, static::class);
     }
 
     protected static function prepareStatement(array $attributes): PDOStatement
@@ -86,19 +94,14 @@ abstract class DbModel extends Model
         return $statement;
     }
 
-    public static function findById(string $id): ?self
+    public function primaryValue()
     {
-        return self::findOne(['id' => $id]);
+        return $this->{$this->primaryKey()};
     }
 
     public function primaryKey(): string
     {
         return 'id';
-    }
-
-    public function primaryValue()
-    {
-        return $this->{$this->primaryKey()};
     }
 
 }

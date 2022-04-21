@@ -9,53 +9,74 @@ use function PHPUnit\Framework\arrayHasKey;
 
 class SteamUser extends SteamAPIObject
 {
-    public string $steamId;
-    public int $communityVisibilityState;
-    public int $profileState;
-    public string $personaName;
-    public string $realName;
-    public string $profileUrl;
+    public string $steamid;
+    public int $communityvisibilitystate;
+    public int $profilestate;
+    public string $personaname;
+    public string $profileurl;
     public string $avatar;
-    public string $avatarMedium;
-    public string $avatarFull;
-    public string $countryCode;
-    public string $playerLevel;
-    public array $userGames;
-    public int $gameCount;
+    public string $avatarmedium;
+    public string $avatarfull;
+    public string $personastate;
+    public string $playerlevel;
     public array $friends;
+    public array $usergames;
+    public int $gamecount;
+    public string $loccountrycode;
+    public $realname;
+
+    /**
+     * @var mixed|string
+     */
 
     public static function findBySteamId($steam_id): ?SteamUser
     {
 //        http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=XXXXXXXXXXXXXXXXXXXXXXX&steamids=76561197960435530
-        $steamUser = new SteamUser();
+
+        // fetch user from the database
+        // if not found, fetch from steam and save to the database
+        $steamUser = self::findOne(['steamid' => $steam_id]);
+
+        if (!$steamUser) {
+            $steamUser = self::fetchFromSteam($steam_id);
+            $steamUser->save();
+        }
+
+        return $steamUser;
+    }
+
+    private static function fetchFromSteam($steam_id): ?SteamUser
+    {
 
         $url = "http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/";
         $queryParams = ['steamids' => [$steam_id]];
-        $data = self::apiCall($url,$queryParams);
+        $data = self::apiCall($url, $queryParams);
 
-        foreach ($data['response']['players'] as $player) {
-            $steamUser->steamId = $player['steamid'];
-            $steamUser->communityVisibilityState = $player['communityvisibilitystate'] ?? 0;
-            $steamUser->profileState = $player['profilestate']?? 0;
-            $steamUser->personaName = $player['personaname'] ?? '';
-            $steamUser->realName = $player['realname'] ?? '';
-            $steamUser->profileUrl = $player['profileurl'];
-            $steamUser->avatar = $player['avatar'] ?? '';
-            $steamUser->avatarMedium = $player['avatarmedium'] ?? '';
-            $steamUser->avatarFull = $player['avatarfull'] ?? '';
-            $steamUser->countryCode = $player['loccountrycode'] ?? '';
-            $steamUser->gameCount = $player['game_count'] ?? 0;
-            $steamUser->playerLevel = self::getPlayerLevel($steam_id) ?? 0;
-            $steamUser->userGames  = self::fetchOwnedGames($steam_id);
-            $steamUser->gameCount = count($steamUser->userGames);
-            $steamUser->friends = self::fetchFriends($steam_id);
-            return $steamUser;
-        }
+        $steamUser = new SteamUser();
 
-        return null;
+        $player = $data['response']['players'][0] ?? null;
+
+
+        $steamUser->steamid = $player['steamid'];
+        $steamUser->communityvisibilitystate = $player['communityvisibilitystate'] ?? 0;
+        $steamUser->profilestate = $player['profilestate'] ?? 0;
+        $steamUser->personaname = $player['personaname'] ?? '';
+        $steamUser->realname = $player['realname'] ?? '';
+        $steamUser->profileurl = $player['profileurl'];
+        $steamUser->avatar = $player['avatar'] ?? '';
+        $steamUser->avatarmedium = $player['avatarmedium'] ?? '';
+        $steamUser->avatarfull = $player['avatarfull'] ?? '';
+        $steamUser->loccountrycode = $player['loccountrycode'] ?? '';
+        $steamUser->playerlevel = self::getPlayerLevel($steam_id) ?? 0;
+        $steamUser->usergames = self::fetchOwnedGames($steam_id);
+        $steamUser->gamecount = count($steamUser->usergames);
+        $steamUser->friends = self::fetchFriends($steam_id);
+
+        return $steamUser;
     }
 
-    private static function getPlayerLevel($steam_id){
+    private static function getPlayerLevel($steam_id)
+    {
         $uri = "http://api.steampowered.com/IPlayerService/GetSteamLevel/v1/";
         $queryParams = ['steamid' => $steam_id];
         return self::apiCall($uri, $queryParams)['response']['player_level'] ?? 0;
@@ -81,17 +102,16 @@ class SteamUser extends SteamAPIObject
         $appIds = array_column($games, 'appid');
         //get data for games owned by user
         $userGames = [];
-        foreach($games as $game) {
-            $userGame = new UserGame();
-            $userGame->appId = $game['appid'] ?? 0 ;
+        foreach ($games as $game) {
+            $steamGame = SteamGame::findOne(['appid' => $game['appid']]);
 
-            if($userGame->appId === 0) {
-                continue;
-            }
+            $userGame = new UserGame();
+            $userGame->appId = $game['appid'] ?? 0;
 
             $userGame->steamId = $steam_id;
             $userGame->playtimeForever = $game['playtime_forever'] ?? 0;
             $userGame->playtime2Weeks = $game['playtime_2weeks'] ?? 0;
+
             $userGames[] = $userGame;
         }
 
@@ -110,12 +130,22 @@ class SteamUser extends SteamAPIObject
                 $steamFriend = new SteamFriend();
                 $steamFriend->steamid = $friend['steamid'];
                 $steamFriend->relationship = $friend['relationship'];
-                $steamFriend->friend_since  = (int)$friend['friend_since'];
+                $steamFriend->friend_since = (int)$friend['friend_since'];
                 $steamFriends[] = $steamFriend;
             }
-        }   catch (\Exception $e) {
+        } catch (\Exception $e) {
         }
         return $steamFriends;
+    }
+
+    public static function tableName()
+    {
+        return 'steam_users';
+    }
+
+    public function loadFriends(): array
+    {
+        return $this->friends = self::fetchFriends($this->steamid);
     }
 
     public function rules(): array
@@ -123,9 +153,30 @@ class SteamUser extends SteamAPIObject
         return [];
     }
 
-
-    public static function tableName()
+    public function attributes(): array
     {
-        // TODO: Implement tableName() method.
+        return [
+            'steamid',
+            'communityvisibilitystate',
+            'profilestate',
+            'personaname',
+            'realname',
+            'profileurl',
+            'avatar',
+            'avatarmedium',
+            'avatarfull',
+            'loccountrycode',
+            'gamecount',
+        ];
+    }
+
+    public function fetchUserGames()
+    {
+        $this->usergames = self::fetchOwnedGames($this->steamid);
+    }
+
+    public function fetchUserFriends()
+    {
+        $this->friends = self::fetchFriends($this->steamid);
     }
 }
