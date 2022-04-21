@@ -30,9 +30,12 @@ $config = [
 $app = new Application(dirname(__DIR__), $config);
 
 $app->router->get('/', [SiteController::class, 'home']);
+$app->router->get('/profile/', [SteamUserController::class, 'userProfile']);
 $app->router->get('/profile/{steam_id}', [SteamUserController::class, 'show']);
 $app->router->get('/profile/{steam_id}/games', [SteamUserController::class, 'userGames']);
 $app->router->get('/games/{app_id}', [SteamUserController::class, 'gameInfo']);
 $app->router->get('/profile/{steam_id}/friends', [SteamUserController::class, 'userFriends']);
+
+$app->router->get('/login', [AuthController::class, 'login']);
 
 $app->run();

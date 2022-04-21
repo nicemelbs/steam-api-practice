@@ -2,6 +2,7 @@
 
 namespace app\controllers;
 
+use app\core\Application;
 use app\core\Controller;
 use app\core\Request;
 use app\core\Response;
@@ -13,11 +14,11 @@ class SteamUserController extends Controller
 
     public function show(Request $request, Response $response)
     {
+
         $steam_id = $request->getRouteParams()['steam_id'];
         $steamUser = SteamUser::findBySteamId($steam_id);
 
         $steamUser->playerlevel = SteamUser::getPlayerLevel($steam_id);
-
 
         return $this->render('profile', [
             'steamUser' => $steamUser
@@ -52,6 +53,14 @@ class SteamUserController extends Controller
         return $this->render('userFriends', [
             'steamUser' => $steamUser
         ]);
+    }
+
+    public function userProfile(Request $request, Response $response)
+    {
+        if (!Application::isGuest()) {
+            $response->redirect('/profile/' . $_SESSION['steamid']);
+        }
+
     }
 
 }

@@ -2,6 +2,8 @@
 
 use app\core\Application;
 
+require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
+
 ?>
 <html>
 <head>
@@ -44,20 +46,11 @@ use app\core\Application;
 
                 <?php if (Application::isGuest()): ?>
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/login">Login</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/register">Register</a>
-                        </li>
+                        <li class="nav-item"><?php loginbutton('rectangle'); ?></li>
                     </ul>
                 <?php else: ?>
                     <ul class="navbar-nav">
-                        <li class="nav-item">
-                            <a class="nav-link" href="/profile">   <?= Application::$app->user->getDisplayName() ?> </a>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/logout">Logout</a>
-                        </li>
+                        <li class="nav-item"><?php logoutbutton(); ?></li>
                     </ul>
                 <?php endif ?>
             </div>

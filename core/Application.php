@@ -81,7 +81,7 @@ class Application
 
     public static function isGuest(): bool
     {
-        return !self::$app->user;
+        return !isset($_SESSION['steamid']);
     }
 
     public function run()
