@@ -9,14 +9,14 @@ use app\models\SteamUser;
  */
 ?>
 
-<table>
+<table class="table table-striped">
     <tr>
-        <th>Image</th>
-        <th>Item Name</th>
-        <th>Type</th>
-        <th>Description</th>
-        <th>Inspect Link</th>
-        <th>Steam Community Market Link</th>
+        <th class="col-1">Image</th>
+        <th class="col-2">Item Name</th>
+        <th class="col-2">Type</th>
+        <th class="col-5">Descrption</th>
+        <th class="col-4">Inspect Link</th>
+        <th class="col-4">Steam Community Market Link</th>
     </tr>
     <?php foreach ($steamUser->items as $item): ?>
         <tr>
