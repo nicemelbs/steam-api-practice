@@ -40,9 +40,31 @@ class SteamUserController extends Controller
     {
         $app_id = $request->getRouteParams()['app_id'];
         $game = SteamGame::findOne(['appid' => $app_id]);
+        $owned = false;
+        $hours = 0;
+
+        //check if a user is logged in
+        if (Application::isGuest()) {
+            $steamUser = null;
+        } else {
+            $steamUser = SteamUser::findBySteamId($_SESSION['steamid']);
+            $steamUser->fetchUserGames();
+
+            //check if the user owns the game
+            $games = $steamUser->usergames;
+            foreach ($games as $usergame) {
+                if ($usergame->appId == $app_id) {
+                    $owned = true;
+                    $hours = round($usergame->playtimeForever / 60);
+                    break;
+                }
+            }
+        }
 
         return $this->render('gameInfo', [
-            'game' => $game
+            'game' => $game,
+            'owned' => $owned,
+            'hours' => $hours,
         ]);
     }
 
