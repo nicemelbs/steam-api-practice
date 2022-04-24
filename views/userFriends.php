@@ -13,11 +13,11 @@ $steamUser->fetchUserFriends();
 ?>
 
 <div class="container">
+    <h3><a href="/profile/<?= $steamUser->steamid ?>"><?= $steamUser->personaname ?></a>'s Friends</h3>
     <?php if (count($steamUser->friends) > 0): ?>
 
-        <h3><?= $steamUser->personaname ?>'s Friends</h3>
 
-        <table class="table-striped">
+        <table class="table table-striped">
             <tr>
                 <th>Photo</th>
                 <th>Name</th>

@@ -21,7 +21,8 @@ class SteamUserController extends Controller
         $steamUser->playerlevel = SteamUser::getPlayerLevel($steam_id);
 
         return $this->render('profile', [
-            'steamUser' => $steamUser
+            'steamUser' => $steamUser,
+            'title' => $steamUser->personaname . '\'s Profile'
         ]);
     }
 

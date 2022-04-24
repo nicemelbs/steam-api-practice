@@ -3,6 +3,7 @@
 use app\core\Application;
 use app\models\SteamUser;
 
+
 require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
 
 ?>
@@ -37,6 +38,8 @@ require_once Application::$ROOT_DIR . '/steamauth/steamauth.php';
                     <li class="nav-item">
                         <a class="nav-link" href="/profile/<?= $_SESSION['steamid'] ?>/games">My Games</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile/<?= $_SESSION['steamid'] ?>/friends">My Friends</a>
                     <li class="nav-item">
                         <a class="nav-link" href="/profile/<?= $_SESSION['steamid'] ?>/inventory">My Inventory</a>
                     </li>

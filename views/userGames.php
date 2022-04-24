@@ -8,10 +8,10 @@ use app\models\SteamUser;
 $steamUser->fetchUserGames();
 ?>
 <div class=" container-fluid">
-    <h1> <?= $steamUser->personaname ?>'s Game Data </h1>
+    <h3><a href="/profile/<?= $steamUser->steamid ?>"><?= $steamUser->personaname ?></a>'s Games</h3>
 </div>
 <div class=" container-fluid">
-    <table class=" table-striped">
+    <table class="table table-striped">
         <tr>
             <th>&nbsp;</th>
             <th>Game</th>
