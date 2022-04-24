@@ -204,6 +204,8 @@ class SteamUser extends SteamAPIObject
             $item['market_hash_name'] = $description['market_hash_name'];
             $item['type'] = $description['type'];
 
+            $item['description'] = $description['descriptions'][0]['value'];
+
             if (isset($description['icon_url'])) {
                 $item['icon_url'] = 'https://steamcommunity-a.akamaihd.net/economy/image/' . $description['icon_url'];
             } else {
@@ -224,6 +226,13 @@ class SteamUser extends SteamAPIObject
                 $item['inspect_link'] = $link;
             } else {
                 unset($item['inspect_link']);
+            }
+
+            //add link to the steam community market if item is marketable
+            if ($description['marketable']) {
+                $item['scm_link'] = 'https://steamcommunity.com/market/listings/730/' . $item['market_hash_name'];
+            } else {
+                unset($item['scm_link']);
             }
 
             $items [] = $item;

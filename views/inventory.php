@@ -14,7 +14,9 @@ use app\models\SteamUser;
         <th>Image</th>
         <th>Item Name</th>
         <th>Type</th>
+        <th>Description</th>
         <th>Inspect Link</th>
+        <th>Steam Community Market Link</th>
     </tr>
     <?php foreach ($steamUser->items as $item): ?>
         <tr>
@@ -22,11 +24,25 @@ use app\models\SteamUser;
                 ?>"/></td>
             <td><?= $item['market_hash_name'] ?></td>
             <td><?= $item['type'] ?></td>
-            <?php if (isset($item['inspect_link'])): ?>
-                <td><a href="<?= $item['inspect_link'] ?>">Inspect</a></td>
-            <?php else: ?>
-                <td>&nbsp;</td>
-            <?php endif; ?>
+            <td>
+                <?= $item['description'] ?>
+            </td>
+
+            <td>
+                <?php if (isset($item['inspect_link'])): ?>
+                    <a href="<?= $item['inspect_link'] ?>">Inspect in game...</a>
+                <?php else: ?>
+                    &nbsp;
+                <?php endif; ?>
+            </td>
+
+            <td>
+                <?php if (isset($item['scm_link'])): ?>
+                    <a href="<?= $item['scm_link'] ?>">View in the community market</a>
+                <?php else: ?>
+                    &nbsp;
+                <?php endif; ?>
+            </td>
         </tr>
 
     <?php endforeach; ?>
