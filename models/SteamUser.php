@@ -24,6 +24,7 @@ class SteamUser extends SteamAPIObject
     public int $gamecount;
     public string $loccountrycode;
     public $realname;
+    public array $items;
 
     /**
      * @var mixed|string
@@ -71,6 +72,7 @@ class SteamUser extends SteamAPIObject
         $steamUser->usergames = self::fetchOwnedGames($steam_id);
         $steamUser->gamecount = count($steamUser->usergames);
         $steamUser->friends = self::fetchFriends($steam_id);
+        $steamUser->items = [];
 
         return $steamUser;
     }
@@ -178,5 +180,57 @@ class SteamUser extends SteamAPIObject
     public function fetchUserFriends()
     {
         $this->friends = self::fetchFriends($this->steamid);
+    }
+
+    public function fetchItems()
+    {
+        $steam_id = $this->steamid;
+        $url = "https://steamcommunity.com/profiles/{$steam_id}/inventory/json/730/2";
+
+        //fetching inventory does not require API  key
+        $fetchedItems = self::apiCall($url, [], false);
+        $inventory = $fetchedItems['rgInventory'] ?? [];
+        $descriptions = $fetchedItems['rgDescriptions'] ?? [];
+
+        $items = [];
+
+        foreach ($inventory as $key => $value) {
+            $item[$key] = $value;
+            $classid = $value['classid'];
+            $instanceid = $value['instanceid'];
+
+            $description = $descriptions[$classid . '_' . $instanceid];
+
+            $item['market_hash_name'] = $description['market_hash_name'];
+            $item['type'] = $description['type'];
+
+            if (isset($description['icon_url'])) {
+                $item['icon_url'] = 'https://steamcommunity-a.akamaihd.net/economy/image/' . $description['icon_url'];
+            } else {
+                unset($item['icon_url']);
+            }
+
+            if (isset($description['icon_url_large'])) {
+                $item['icon_url_large'] = 'https://steamcommunity-a.akamaihd.net/economy/image/' . $description['icon_url_large'];
+            } else {
+                unset($item['icon_url_large']);
+            }
+
+            //check if an inspect link is available
+            if (isset($description['actions'])) {
+                $link = $description['actions'][0]['link'];
+                $link = str_replace('%assetid%', $key, $link);
+                $link = str_replace('%owner_steamid%', $steam_id, $link);
+                $item['inspect_link'] = $link;
+            } else {
+                unset($item['inspect_link']);
+            }
+
+            $items [] = $item;
+        }
+
+
+        $this->items = $items;
+
     }
 }

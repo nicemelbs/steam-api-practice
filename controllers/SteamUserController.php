@@ -63,4 +63,17 @@ class SteamUserController extends Controller
 
     }
 
+    public function inventory(Request $request, Response $response)
+    {
+        $steam_id = $request->getRouteParams()['steam_id'];
+        $steamUser = SteamUser::findBySteamId($steam_id);
+        $steamUser->fetchItems();
+        if (!Application::isGuest()) {
+            return $this->render('inventory', ['steamUser' => $steamUser]);
+        } else {
+            return "Please sign in to view this player's inventory.";
+        }
+
+    }
+
 }

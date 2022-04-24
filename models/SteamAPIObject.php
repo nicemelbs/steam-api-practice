@@ -8,12 +8,16 @@ use app\core\db\DbModel;
 abstract class SteamAPIObject extends DbModel
 {
 
-    protected static function apiCall($url, array $queryParams, bool $needsApiKey = true){
-        $queryParams['key'] = $_ENV['STEAM_API_KEY'];
+    protected static function apiCall($url, array $queryParams, bool $needsApiKey = true)
+    {
 
-        foreach($queryParams as $key => $value){
+        if ($needsApiKey) {
+            $queryParams['key'] = $_ENV['STEAM_API_KEY'];
+        }
+
+        foreach ($queryParams as $key => $value) {
             //if value is an array, convert to a + separated string
-            if(is_array($value)){
+            if (is_array($value)) {
                 $queryParams[$key] = implode('+', $value);
             }
         }

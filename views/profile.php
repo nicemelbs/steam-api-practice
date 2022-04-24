@@ -47,11 +47,17 @@ if ($steamUser) {
                     <td><a href="<?= $steamUser->profileurl ?>"><?= $steamUser->profileurl ?></a></td>
                 </tr>
                 <tr>
-                    <td><a href="/profile/<?= $steamUser->steamid ?>/friends">Friends (<?= count($steamUser->friends)
-                            ?></a>)
+                <tr>
+                    <td>CS:GO Inventory</td>
+                    <td>
+                        <a href="/profile/<?= $steamUser->steamid ?>/inventory">Inventory</a>
                     </td>
-                    <td><a href="/profile/<?= $steamUser->steamid ?>/games">Games (<?=
-                            $steamUser->gamecount ?>)</a></td>
+                </tr>
+                <td><a href="/profile/<?= $steamUser->steamid ?>/friends">Friends (<?= count($steamUser->friends)
+                        ?></a>)
+                </td>
+                <td><a href="/profile/<?= $steamUser->steamid ?>/games">Games (<?=
+                        $steamUser->gamecount ?>)</a></td>
                 </tr>
             </table>
         </div>

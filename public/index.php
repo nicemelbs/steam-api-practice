@@ -35,6 +35,7 @@ $app->router->get('/profile/{steam_id}', [SteamUserController::class, 'show']);
 $app->router->get('/profile/{steam_id}/games', [SteamUserController::class, 'userGames']);
 $app->router->get('/games/{app_id}', [SteamUserController::class, 'gameInfo']);
 $app->router->get('/profile/{steam_id}/friends', [SteamUserController::class, 'userFriends']);
+$app->router->get('/profile/{steam_id}/inventory', [SteamUserController::class, 'inventory']);
 
 $app->router->get('/login', [AuthController::class, 'login']);
 
