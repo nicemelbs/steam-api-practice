@@ -26,10 +26,26 @@ abstract class SteamAPIObject extends DbModel
             'query' => $queryParams
         ];
 
-        $client = Application::$client;
+        //check if we have a cached version of the data from the database
+        //if so, take it from the database
+        //if not, fetch it from the API and store it in the database
+        $cacheKey = md5($url . serialize($queryParams));
 
-        $response = $client->request('GET', $url, $options);
-        $body = $response->getBody();
+        $cacheBody = Cache::findOne(['cacheKey' => $cacheKey]);
+
+        if (!$cacheBody) {
+            $cache = new Cache();
+            $cache->cacheKey = $cacheKey;
+
+            $client = Application::$client;
+            $response = $client->request('GET', $url, $options);
+            $body = $response->getBody();
+            $cache->cacheValue = $body;
+            $cache->save();
+        } else {
+            $body = $cacheBody->cacheValue;
+        }
+
         return json_decode($body, true);
     }
 }

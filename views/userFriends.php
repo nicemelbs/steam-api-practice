@@ -5,10 +5,6 @@ use app\models\SteamUser;
 /**
  * @var SteamUser $steamUser
  */
-//echo '<pre>';
-//var_dump(count($steamUser->friends));
-//echo '</pre>';
-//exit;
 $steamUser->fetchUserFriends();
 ?>
 

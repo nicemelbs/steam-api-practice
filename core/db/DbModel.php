@@ -28,6 +28,7 @@ abstract class DbModel extends Model
                 return "$attribute = :$attribute";
             }, array_keys($attributes)));
         }
+
         $statement = self::prepare($query);
         foreach ($attributes as $param => $value) {
             $statement->bindValue(':' . $param, $value);

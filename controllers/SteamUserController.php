@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\core\Application;
 use app\core\Controller;
+use app\core\exceptions\ForbiddenException;
 use app\core\exceptions\NotFoundException;
 use app\core\Request;
 use app\core\Response;
@@ -109,15 +110,18 @@ class SteamUserController extends Controller
 
     }
 
+    /**
+     * @throws ForbiddenException
+     */
     public function inventory(Request $request, Response $response)
     {
-        $steam_id = $request->getRouteParams()['steam_id'];
-        $steamUser = SteamUser::findBySteamId($steam_id);
-        $steamUser->fetchItems();
         if (!Application::isGuest()) {
+            $steam_id = $request->getRouteParams()['steam_id'];
+            $steamUser = SteamUser::findBySteamId($steam_id);
+            $steamUser->fetchItems();
             return $this->render('inventory', ['steamUser' => $steamUser]);
         } else {
-            return "Please sign in to view this player's inventory.";
+            throw new ForbiddenException('Please sign in to view this inventory');
         }
 
     }
