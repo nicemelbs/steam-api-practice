@@ -9,6 +9,7 @@ use app\core\Request;
 use app\core\Response;
 use app\models\SteamGame;
 use app\models\SteamUser;
+use Stidges\CountryFlags\CountryFlag;
 
 class SteamUserController extends Controller
 {
@@ -21,10 +22,23 @@ class SteamUserController extends Controller
 
         $steamUser->playerlevel = SteamUser::getPlayerLevel($steam_id);
 
+        $cc = 'Unknown';
+
+        if ($steamUser) {
+
+            if ($steamUser->loccountrycode) {
+                $cc = new CountryFlag();
+                $cc = $cc->get($steamUser->loccountrycode);
+            }
+
+            $steamUser->loadFriends();
+        }
         return $this->render('profile', [
             'steamUser' => $steamUser,
-            'title' => $steamUser->personaname . '\'s Profile'
+            'cc' => $cc
         ]);
+
+
     }
 
     public function userGames(Request $request, Response $response)

@@ -7,17 +7,6 @@ use Stidges\CountryFlags\CountryFlag;
  * @var $steamUser SteamUser
  */
 
-$cc = 'Unknown';
-
-if ($steamUser) {
-
-    if ($steamUser->loccountrycode) {
-        $cc = new CountryFlag();
-        $cc = $cc->get($steamUser->loccountrycode);
-    }
-    $steamUser->loadFriends();
-}
-
 
 ?>
 
