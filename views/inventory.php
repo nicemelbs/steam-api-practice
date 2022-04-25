@@ -9,8 +9,9 @@ use app\models\SteamUser;
  */
 
 ?>
-<h3><a href="/profile/<?= $steamUser->steamid ?>"><?= $steamUser->personaname ?></a>'s Counter-Strike: Global
-    Offensive Inventory</h3>
+<h3><a href="/profile/<?= $steamUser->steamid ?>"><?= $steamUser->personaname ?></a>'s <a
+            href="/games/730">Counter-Strike: Global
+        Offensive</a> Inventory</h3>
 <?php if (count($steamUser->items) > 0): ?>
 
     <table class="table table-striped">

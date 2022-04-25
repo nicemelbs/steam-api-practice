@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\core\Application;
 use app\core\Controller;
+use app\core\exceptions\NotFoundException;
 use app\core\Request;
 use app\core\Response;
 use app\models\SteamGame;
@@ -36,10 +37,18 @@ class SteamUserController extends Controller
         ]);
     }
 
+    /**
+     * @throws NotFoundException
+     */
     public function gameInfo(Request $request, Response $response)
     {
         $app_id = $request->getRouteParams()['app_id'];
         $game = SteamGame::findOne(['appid' => $app_id]);
+
+        if (!$game) {
+            throw new NotFoundException("Game not found");
+        }
+
         $owned = false;
         $hours = 0;
 
